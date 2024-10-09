@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 THIRD_PARTY_APPS = []
-LOCAL_APPS = ["users.apps.UsersConfig"]
+LOCAL_APPS = ["users.apps.UsersConfig", "store.apps.StoreConfig"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
