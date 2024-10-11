@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
 
@@ -57,3 +58,35 @@ class CartTotalPriceTest(TestCase):
         self.cart.refresh_from_db()
 
         self.assertEqual(self.cart.total_price, 0)
+
+    def test_reduce_inventory_success(self):
+        initial_inventory = self.product1.inventory
+        self.product1.reduce_inventory(10)
+        self.product1.refresh_from_db()
+
+        self.assertEqual(self.product1.inventory, initial_inventory - 10)
+
+    def test_reduce_inventory_insufficient_inventory(self):
+        with self.assertRaises(ValidationError):
+            self.product1.reduce_inventory(100)
+
+    def test_increase_quantity_success(self):
+        initial_inventory = self.product1.inventory
+        cart_item = CartItem.objects.create(
+            cart=self.cart, product=self.product1, quantity=1
+        )
+
+        cart_item.increase_quantity(5)
+        cart_item.refresh_from_db()
+        self.product1.refresh_from_db()
+
+        self.assertEqual(cart_item.quantity, 6)
+        self.assertEqual(self.product1.inventory, initial_inventory - 5)
+
+    def test_increase_quantity_insufficient_inventory(self):
+        cart_item = CartItem.objects.create(
+            cart=self.cart, product=self.product1, quantity=1
+        )
+
+        with self.assertRaises(ValidationError):
+            cart_item.increase_quantity(60)
