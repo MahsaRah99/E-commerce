@@ -32,7 +32,7 @@ class Product(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     total_price = models.PositiveIntegerField(_("Total price"), default=0)
-    created_at = models.DateTimeField(_("Updated at"), auto_now_add=True)
+    created_at = models.DateTimeField(_("Created at"), auto_now_add=True)
     is_active = models.BooleanField(_("Is active"), default=True)
     expiry_time = models.DateTimeField(_("Expiry time"), null=True, db_index=True)
 
@@ -50,6 +50,9 @@ class Cart(models.Model):
                 ).aggregate(total=Sum("item_total"))["total"]
                 or 0
             )
+
+    def __str__(self):
+        return f"{self.user}'s cart"
 
 
 class CartItem(models.Model):
