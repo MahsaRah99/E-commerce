@@ -10,7 +10,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class CartItemSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(many=True)
+    product = ProductSerializer()
 
     class Meta:
         model = CartItem
@@ -18,13 +18,13 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
-    cart_items = CartItemSerializer(many=True, read_only=True)
+    items = CartItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Cart
-        fields = ("cart_items", "total_price")
+        fields = ("items", "total_price")
 
 
 class AddToCartSerializer(serializers.Serializer):
-    product_id = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    product_id = serializers.IntegerField(min_value=1)
     quantity = serializers.IntegerField(min_value=1)
