@@ -34,6 +34,8 @@ THIRD_PARTY_APPS = [
     "debug_toolbar",
     "rest_framework",
     "rest_framework.authtoken",
+    "celery",
+    "django_celery_beat",
 ]
 LOCAL_APPS = ["users.apps.UsersConfig", "store.apps.StoreConfig"]
 
