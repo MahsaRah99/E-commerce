@@ -1,6 +1,10 @@
+from datetime import timedelta
+
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Sum
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -23,3 +27,26 @@ class Product(models.Model):
 
         if affected_rows == 0:
             raise ValidationError("Not enough inventory available")
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    total_price = models.PositiveIntegerField(_("Total price"), default=0)
+    created_at = models.DateTimeField(_("Updated at"), auto_now_add=True)
+    is_active = models.BooleanField(_("Is active"), default=True)
+    expiry_time = models.DateTimeField(_("Expiry time"), null=True, db_index=True)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.expiry_time = timezone.now() + timedelta(minutes=30)
+        self.calculate_total_price()
+        super().save(*args, **kwargs)
+
+    def calculate_total_price(self):
+        if self.pk:
+            self.total_price = (
+                self.items.annotate(
+                    item_total=F("product__price") * F("quantity")
+                ).aggregate(total=Sum("item_total"))["total"]
+                or 0
+            )
