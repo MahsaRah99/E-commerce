@@ -7,7 +7,7 @@ from .managers import CustomUserManager
 
 class User(AbstractUser):
     phone_number = models.CharField(_("Phone number"), max_length=13, unique=True)
-    full_name = models.CharField(_("First name"), max_length=300)
+    full_name = models.CharField(_("Full name"), max_length=300)
     username = None
 
     USERNAME_FIELD = "phone_number"
