@@ -30,7 +30,11 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-THIRD_PARTY_APPS = ["rest_framework", "rest_framework.authtoken"]
+THIRD_PARTY_APPS = [
+    "debug_toolbar",
+    "rest_framework",
+    "rest_framework.authtoken",
+]
 LOCAL_APPS = ["users.apps.UsersConfig", "store.apps.StoreConfig"]
 
 INSTALLED_APPS = [
@@ -52,6 +56,12 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+]
+
+
+INTERNAL_IPS = [
+    "127.0.0.1",
 ]
 
 ROOT_URLCONF = "core.urls"
