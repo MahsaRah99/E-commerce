@@ -38,3 +38,15 @@ class AddToCartView(generics.GenericAPIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
+
+
+class MyCartView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CartSerializer
+
+    def get_object(self):
+        return (
+            Cart.objects.filter(user=self.request.user, is_active=True)
+            .prefetch_related("cartitem_set__product")
+            .first()
+        )
