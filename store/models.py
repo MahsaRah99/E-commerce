@@ -50,3 +50,22 @@ class Cart(models.Model):
                 ).aggregate(total=Sum("item_total"))["total"]
                 or 0
             )
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, related_name="items", on_delete=models.CASCADE)
+    product = models.ForeignKey(
+        Product, related_name="cart_items", on_delete=models.CASCADE
+    )
+    quantity = models.PositiveIntegerField(_("Quantity"), default=0)
+
+    def increase_quantity(self, quantity: int) -> None:
+        """Incrementing quantity and reducing inventory atomically."""
+        self.product.reduce_inventory(quantity)
+
+        self.quantity += quantity
+        self.save(update_fields=["quantity"])
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.cart.save()
