@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-THIRD_PARTY_APPS = []
+THIRD_PARTY_APPS = ["rest_framework", "rest_framework.authtoken"]
 LOCAL_APPS = ["users.apps.UsersConfig", "store.apps.StoreConfig"]
 
 INSTALLED_APPS = [
@@ -127,5 +127,13 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "shared.exceptions.exception_handler",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 100,
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+}
 
 AUTH_USER_MODEL = "users.User"
