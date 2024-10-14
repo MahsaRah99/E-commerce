@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import F, Sum
+from django.db.models import F, Q, Sum
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -35,6 +35,16 @@ class Cart(models.Model):
     created_at = models.DateTimeField(_("Created at"), auto_now_add=True)
     is_active = models.BooleanField(_("Is active"), default=True)
     expiry_time = models.DateTimeField(_("Expiry time"), null=True, db_index=True)
+
+
+class Meta:
+    constraints = [
+        models.UniqueConstraint(
+            fields=["is_active", "user"],
+            condition=Q(is_active=True),
+            name="unique_is_active",
+        )
+    ]
 
     def save(self, *args, **kwargs):
         if not self.pk:
