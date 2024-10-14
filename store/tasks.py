@@ -1,5 +1,6 @@
 from celery import shared_task
 from django.db import transaction
+from django.db.models import F
 from django.utils import timezone
 
 from .models import Cart, Product
@@ -15,7 +16,7 @@ def deactive_expired_carts():
     with transaction.atomic():
         for cart in expired_carts:
             for item in cart.items.all():
-                item.product.inventory += item.quantity
+                item.product.inventory = F("inventory") + item.quantity
 
             Product.objects.bulk_update(
                 [item.product for item in cart.items.all()], ["inventory"]
